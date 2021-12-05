@@ -39,7 +39,6 @@ class PepperProject(object):
     #     self.pepper_has_ball = True
 
     def explain_task_instructions(self):
-        pepper.start_animation("Me_1")
         pepper.say("I will raise the hand gently and where you can place the ball");
         pepper.say("Then I will throw the ball from where I stand so you can catch it.")
         time.sleep(1)
