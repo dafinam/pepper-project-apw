@@ -11,13 +11,18 @@ class PepperProject(object):
         super(PepperProject, self).__init__()
         self.pepper_has_ball = False
 
+    def init_pepper(self):
+        pepper.motion_service.rest()
+        pepper.motion_service.wakeUp() # Goes through the wake up routine
+
     def intro_act(self):
         # Assume Pepper is asleep and we wake it up
         pepper.stand()
+        pepper.set_awareness(False)
 
         # Pepper greets the room
-        robotName = pepper.get_robot_name()
-        pepper.say("Hello everyone, my name is %s. Today we will be playing a game together." % robotName)
+        robot_name = pepper.get_robot_name()
+        pepper.say("Hello, my name is %s. Today we will be playing a game together." % robot_name)
 
         # Pepper explains the task
         pepper.start_animation("Explain_1")
@@ -27,7 +32,6 @@ class PepperProject(object):
         pepper.start_animation("Please_1")
         pepper.say("I hope someone is willing to play catch with me.")
 
-
     # def on_right_back_touched_handler(self, value):
     #     if value == 0.0:
     #         return
@@ -36,7 +40,7 @@ class PepperProject(object):
     #     self.pepper_has_ball = True
 
     def explain_task_instructions(self):
-        # pepper.start_animation("Me_1")
+        pepper.start_animation("Me_1")
         pepper.say("I will raise the hand gently and where you can place the ball");
         pepper.say("Then I will throw the ball from where I stand so you can catch it.")
 
@@ -65,23 +69,41 @@ class PepperProject(object):
         pepper.motion_service.angleInterpolationWithSpeed("RHand", 0.8, 1)
         pepper.stand()
 
-    def test(self):
-        pepper.stand()
-        pepper.move_forward(0.5)
-        time.sleep(2)
-        pepper.turn_around(1)
-        time.sleep(2)
-        pepper.stop_moving()
-        pepper.stand()
+        # Pepper shows enthusiasm
+        pepper.start_animation("Happy_4")
+        pepper.say("That was fun for me. I hope you enjoyed it as well.")
+
+    # Closing act
+    def closing_act(self):
+        pepper.say("See you another time. Bye bye")
+        pepper.set_awareness(True)
+
+    # Battery status
+    def battery_status(self):
+        pepper.battery_status()
+
+    # def test(self):
+    #     pepper.stand()
+    #     pepper.move_forward(0.5)
+    #     time.sleep(2)
+    #     pepper.turn_around(1)
+    #     time.sleep(2)
+    #     pepper.stop_moving()
+    #     pepper.stand()
 
 
-try:
-    pepperProject = PepperProject()
-    pepperProject.intro_act()
-    pepperProject.pick_volunteeer()
-    pepperProject.explain_task_instructions()
-    time.sleep(1)
-    pepperProject.main_act()
-except Exception as error:
-    print(error)
-    pepper.say("I am not sure what to say")
+def main():
+    try:
+        pepper_demo = PepperProject()
+        pepper_demo.intro_act()
+        pepper_demo.pick_volunteeer()
+        pepper_demo.explain_task_instructions()
+        time.sleep(1)
+        pepper_demo.main_act()
+        pepper_demo.closing_act()
+    except Exception as error:
+        print(error)
+        pepper.say("I am not sure what to say")
+
+
+main()

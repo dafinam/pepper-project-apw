@@ -249,7 +249,6 @@ class Pepper:
 
         self.tracker_service.stopTracker()
         self.unsubscribe_effector()
-        self.say("Let's do something else!")
 
     def exploration_mode(self, radius):
         """
@@ -326,6 +325,8 @@ class Pepper:
         robot_map = cv2.resize(img, None, fx=1, fy=1, interpolation=cv2.INTER_CUBIC)
 
         print("[INFO]: Showing the map")
+
+        print(robot_map)
 
         if on_robot:
             # TODO: It requires a HTTPS server running. This should be somehow automated.
@@ -679,6 +680,7 @@ class Pepper:
                 time.sleep(0.5)
                 output = self.memory_service.getData("FaceDetected")
                 print("...")
+                # TODO: get person emotion and only play with non-angry volunteers..
                 if output and isinstance(output, list) and len(output) >= 2:
                     print("Face detected")
                     volunteer_found = True
@@ -838,6 +840,29 @@ class Pepper:
                 self.say("I am quite sure your mood is " + emotions[emotion_index])
             else:
                 self.say("I guess your mood is " + emotions[emotion_index])
+
+
+    def get_person_emotion(self):
+        self.autonomous_life_on()
+        emotions = ["neutral", "happy", "surprised", "angry", "sad"]
+        face_id = self.memory_service.getData("PeoplePerception/PeopleList")
+        recognized = None
+        try:
+            recognized = self.face_characteristic.analyzeFaceCharacteristics(face_id[0])
+        except Exception as error:
+            print("[ERROR]: Cannot find a face to analyze.")
+            self.say("I cannot recognize a face.")
+
+        if recognized:
+            properties = self.memory_service.getData(
+                "PeoplePerception/Person/" + str(face_id[0]) + "/ExpressionProperties")
+
+            # Emotion properties
+            emotion_index = (properties.index(max(properties)))
+
+            return emotions[emotion_index]
+        return "unknown"
+
 
     def listen_to(self, vocabulary):
         """
