@@ -669,21 +669,18 @@ class Pepper:
         print("[INFO]: Pick a volunteer mode started")
 
         while not volunteer_found:
-            wait = numpy.random.randint(500, 1500) / 1000
-            theta = numpy.random.randint(-10, 10)
-            self.turn_around(theta)
-            time.sleep(wait)
-            self.stop_moving()
             self.stand()
+            self.turn_around(1)
+            time.sleep(1)
+            self.stop_moving()
             self.face_detection_service.subscribe(proxy_name, 500, 0.0)
-            for memory in range(5):
-                time.sleep(0.5)
-                output = self.memory_service.getData("FaceDetected")
-                print("...")
-                # TODO: get person emotion and only play with non-angry volunteers..
-                if output and isinstance(output, list) and len(output) >= 2:
-                    print("Face detected")
-                    volunteer_found = True
+            time.sleep(0.5)
+            output = self.memory_service.getData("FaceDetected")
+            print("...")
+            # TODO: get person emotion and only play with non-angry volunteers..
+            if output and isinstance(output, list) and len(output) >= 2:
+                print("Face detected")
+                volunteer_found = True
 
         self.say("I found a volunteer! It is you!")
         self.point_at(1.0, 0.0, 0.5, "LArm", 0)
