@@ -12,7 +12,6 @@ class PepperProject(object):
         self.pepper_has_ball = False
 
     def init_pepper(self):
-        pepper.motion_service.rest()
         pepper.motion_service.wakeUp() # Goes through the wake up routine
 
     def intro_act(self):
@@ -43,9 +42,13 @@ class PepperProject(object):
         pepper.start_animation("Me_1")
         pepper.say("I will raise the hand gently and where you can place the ball");
         pepper.say("Then I will throw the ball from where I stand so you can catch it.")
+        time.sleep(1)
+        pepper.say("Get ready")
 
     def pick_volunteeer(self):
+        pepper.set_awareness(True)
         pepper.pick_a_volunteer(detect_face_props=False)
+        pepper.set_awareness(False)
 
     def main_act(self):
         speed = 0.1
@@ -60,12 +63,12 @@ class PepperProject(object):
                                                           0.05)
         pepper.motion_service.angleInterpolationWithSpeed("RHand", 0.0, 0.05)
 
-        # Get hand down
-        pepper.motion_service.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw"], [-1.5, -1.5],
+        # Get hand up and move hip back
+        pepper.motion_service.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "HeadPitch", "HipPitch"], [-1.5, -1.5, 0.2, 0.4],
                                                           speed)
 
         # Throw a ball
-        pepper.motion_service.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw"], [1.0, -1.5], 1, _async=True)
+        pepper.motion_service.angleInterpolationWithSpeed(["RShoulderPitch", "RWristYaw", "HeadPitch", "HipPitch"], [1.0, -1.5, -0.2, -0.4], 1, _async=True)
         pepper.motion_service.angleInterpolationWithSpeed("RHand", 0.8, 1)
         pepper.stand()
 
@@ -77,6 +80,7 @@ class PepperProject(object):
     def closing_act(self):
         pepper.say("See you another time. Bye bye")
         pepper.set_awareness(True)
+        pepper.motion_service.rest()
 
     # Battery status
     def battery_status(self):
@@ -95,10 +99,11 @@ class PepperProject(object):
 def main():
     try:
         pepper_demo = PepperProject()
+        pepper_demo.init_pepper()
         pepper_demo.intro_act()
         pepper_demo.pick_volunteeer()
         pepper_demo.explain_task_instructions()
-        time.sleep(1)
+        time.sleep(3)
         pepper_demo.main_act()
         pepper_demo.closing_act()
     except Exception as error:
